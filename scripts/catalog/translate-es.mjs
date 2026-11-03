@@ -55,7 +55,8 @@ Regras de fidelidade (é instrução de execução com carga; um erro pode machu
 - Traduza o que está escrito. Não acrescente cargas, ângulos, cuidados ou dicas que não estejam no original, e não omita nenhum.
 - Quando vier "passos", cada passo vira um passo, na mesma ordem: mesmo número de itens em todas as listas.
 - Quando vier "texto", divida-o em passos curtos e claros (de 2 a 8), na ordem do texto, sem informação nova; "passos_pt" e "passos_es" têm o mesmo número de itens e se correspondem um a um.
-- Mantenha números, unidades, graus e medidas exatamente como estão.
+- Mantenha números, graus, tempos e medidas como estão — exceto unidades americanas, que viram métricas com valor aproximado e arredondado ("two feet" → "uns 60 cm"; "150 lb" → "68 kg"; "10 yards" → "uns 9 m").
+- A única coisa que pode sair: remissões a outras partes do site de origem que não existem no app ("veja a seção de posicionamento dos pés", "como descrito no guia"). Reescreva a frase sem a remissão, sem mudar a instrução.
 
 Estilo:
 - Português do Brasil, frases curtas no imperativo ("Deite no banco", "Segure a barra").
