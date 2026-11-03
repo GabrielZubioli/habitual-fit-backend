@@ -20,6 +20,7 @@ import { fileURLToPath } from "node:url";
 import { parse } from "yaml";
 
 import { AppSchema } from "../packages/db/dist/index.js";
+import { lerTabelas } from "../packages/db/scripts/build-powersync-schema.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const STREAMS = join(ROOT, "packages", "db", "sync", "streams.yaml");
@@ -59,6 +60,23 @@ for (const [nome, stream] of Object.entries(streams ?? {})) {
 }
 
 const declaradas = new Set(AppSchema.tables.map((t) => t.name));
+
+// O PowerSync exige `id` em toda linha: tabela de chave composta (sem coluna
+// `id` no Postgres) precisa de um `... AS id` derivado da chave natural, senão
+// o deploy das regras falha — ou as linhas somem no aparelho.
+const colunas = lerTabelas(readFileSync(join(ROOT, "packages", "db", "src", "types.ts"), "utf8"));
+for (const stream of Object.values(streams ?? {})) {
+  for (const q of stream?.queries ?? []) {
+    const m = /^\s*SELECT\s+([\s\S]*?)\s+FROM\s+([a-z_][a-z0-9_]*)/i.exec(q);
+    if (!m) continue;
+    const [, campos, tabela] = m;
+    if (colunas[tabela] && !("id" in colunas[tabela]) && !/\bAS\s+id\b/i.test(campos)) {
+      erros.push(
+        `'${tabela}' não tem coluna id: a query precisa de "... AS id" → ${JSON.stringify(q)}`,
+      );
+    }
+  }
+}
 
 for (const t of citadas) {
   if (!declaradas.has(t)) {
