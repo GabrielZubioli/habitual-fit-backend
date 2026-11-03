@@ -301,6 +301,7 @@ export type Database = {
           equipment: Database["public"]["Enums"]["equipment_t"];
           execution: string[] | null;
           execution_en: string[] | null;
+          execution_es: string[] | null;
           external_id: string | null;
           force_type: Database["public"]["Enums"]["force_type_t"] | null;
           id: string;
@@ -316,6 +317,7 @@ export type Database = {
           movement_pattern: Database["public"]["Enums"]["movement_pattern_t"] | null;
           name: string;
           name_en: string | null;
+          name_es: string | null;
           owner_id: string | null;
           popularity: number;
           primary_muscle: Database["public"]["Enums"]["muscle_t"];
@@ -334,6 +336,7 @@ export type Database = {
           equipment?: Database["public"]["Enums"]["equipment_t"];
           execution?: string[] | null;
           execution_en?: string[] | null;
+          execution_es?: string[] | null;
           external_id?: string | null;
           force_type?: Database["public"]["Enums"]["force_type_t"] | null;
           id?: string;
@@ -349,6 +352,7 @@ export type Database = {
           movement_pattern?: Database["public"]["Enums"]["movement_pattern_t"] | null;
           name: string;
           name_en?: string | null;
+          name_es?: string | null;
           owner_id?: string | null;
           popularity?: number;
           primary_muscle: Database["public"]["Enums"]["muscle_t"];
@@ -367,6 +371,7 @@ export type Database = {
           equipment?: Database["public"]["Enums"]["equipment_t"];
           execution?: string[] | null;
           execution_en?: string[] | null;
+          execution_es?: string[] | null;
           external_id?: string | null;
           force_type?: Database["public"]["Enums"]["force_type_t"] | null;
           id?: string;
@@ -382,6 +387,7 @@ export type Database = {
           movement_pattern?: Database["public"]["Enums"]["movement_pattern_t"] | null;
           name?: string;
           name_en?: string | null;
+          name_es?: string | null;
           owner_id?: string | null;
           popularity?: number;
           primary_muscle?: Database["public"]["Enums"]["muscle_t"];

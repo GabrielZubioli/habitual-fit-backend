@@ -92,6 +92,7 @@ const exercises = new Table(
     equipment: column.text,
     execution: column.text,
     execution_en: column.text,
+    execution_es: column.text,
     external_id: column.text,
     force_type: column.text,
     image_url: column.text,
@@ -106,6 +107,7 @@ const exercises = new Table(
     movement_pattern: column.text,
     name: column.text,
     name_en: column.text,
+    name_es: column.text,
     owner_id: column.text,
     popularity: column.real,
     primary_muscle: column.text,
@@ -500,6 +502,7 @@ export const JSON_COLUMNS: Record<string, readonly string[]> = {
     "cues",
     "execution",
     "execution_en",
+    "execution_es",
     "image_urls",
     "secondary_muscles"
   ],
