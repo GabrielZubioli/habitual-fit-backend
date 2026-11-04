@@ -543,6 +543,8 @@ export type Database = {
           fiber_g: number;
           household_grams: number | null;
           household_measure: string | null;
+          household_measure_en: string | null;
+          household_measure_es: string | null;
           id: string;
           image_url: string | null;
           iron_mg: number | null;
@@ -551,6 +553,8 @@ export type Database = {
           kcal: number;
           magnesium_mg: number | null;
           name: string;
+          name_en: string | null;
+          name_es: string | null;
           owner_id: string | null;
           phosphorus_mg: number | null;
           popularity: number;
@@ -584,6 +588,8 @@ export type Database = {
           fiber_g?: number;
           household_grams?: number | null;
           household_measure?: string | null;
+          household_measure_en?: string | null;
+          household_measure_es?: string | null;
           id?: string;
           image_url?: string | null;
           iron_mg?: number | null;
@@ -592,6 +598,8 @@ export type Database = {
           kcal?: number;
           magnesium_mg?: number | null;
           name: string;
+          name_en?: string | null;
+          name_es?: string | null;
           owner_id?: string | null;
           phosphorus_mg?: number | null;
           popularity?: number;
@@ -625,6 +633,8 @@ export type Database = {
           fiber_g?: number;
           household_grams?: number | null;
           household_measure?: string | null;
+          household_measure_en?: string | null;
+          household_measure_es?: string | null;
           id?: string;
           image_url?: string | null;
           iron_mg?: number | null;
@@ -633,6 +643,8 @@ export type Database = {
           kcal?: number;
           magnesium_mg?: number | null;
           name?: string;
+          name_en?: string | null;
+          name_es?: string | null;
           owner_id?: string | null;
           phosphorus_mg?: number | null;
           popularity?: number;
@@ -1090,7 +1102,11 @@ export type Database = {
           id: string;
           image_url: string | null;
           instructions: string | null;
+          instructions_en: string | null;
+          instructions_es: string | null;
           name: string;
+          name_en: string | null;
+          name_es: string | null;
           notes: string | null;
           prep_minutes: number | null;
           servings: number;
@@ -1104,7 +1120,11 @@ export type Database = {
           id?: string;
           image_url?: string | null;
           instructions?: string | null;
+          instructions_en?: string | null;
+          instructions_es?: string | null;
           name: string;
+          name_en?: string | null;
+          name_es?: string | null;
           notes?: string | null;
           prep_minutes?: number | null;
           servings?: number;
@@ -1118,7 +1138,11 @@ export type Database = {
           id?: string;
           image_url?: string | null;
           instructions?: string | null;
+          instructions_en?: string | null;
+          instructions_es?: string | null;
           name?: string;
+          name_en?: string | null;
+          name_es?: string | null;
           notes?: string | null;
           prep_minutes?: number | null;
           servings?: number;
