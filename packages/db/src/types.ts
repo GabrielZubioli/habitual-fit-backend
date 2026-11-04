@@ -73,51 +73,6 @@ export type Database = {
           },
         ];
       };
-      ai_recommendations: {
-        Row: {
-          body: string;
-          created_at: string;
-          dedupe_key: string;
-          expires_at: string | null;
-          id: string;
-          kind: Database["public"]["Enums"]["ai_recommendation_kind_t"];
-          payload: Json | null;
-          resolved_at: string | null;
-          severity: number;
-          status: string;
-          title: string;
-          user_id: string;
-        };
-        Insert: {
-          body: string;
-          created_at?: string;
-          dedupe_key: string;
-          expires_at?: string | null;
-          id?: string;
-          kind: Database["public"]["Enums"]["ai_recommendation_kind_t"];
-          payload?: Json | null;
-          resolved_at?: string | null;
-          severity?: number;
-          status?: string;
-          title: string;
-          user_id: string;
-        };
-        Update: {
-          body?: string;
-          created_at?: string;
-          dedupe_key?: string;
-          expires_at?: string | null;
-          id?: string;
-          kind?: Database["public"]["Enums"]["ai_recommendation_kind_t"];
-          payload?: Json | null;
-          resolved_at?: string | null;
-          severity?: number;
-          status?: string;
-          title?: string;
-          user_id?: string;
-        };
-        Relationships: [];
-      };
       body_measurements: {
         Row: {
           abdomen_cm: number | null;
@@ -396,32 +351,6 @@ export type Database = {
           video_url?: string | null;
         };
         Relationships: [];
-      };
-      food_favorites: {
-        Row: {
-          created_at: string;
-          food_id: string;
-          user_id: string;
-        };
-        Insert: {
-          created_at?: string;
-          food_id: string;
-          user_id: string;
-        };
-        Update: {
-          created_at?: string;
-          food_id?: string;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "food_favorites_food_id_fkey";
-            columns: ["food_id"];
-            isOneToOne: false;
-            referencedRelation: "foods";
-            referencedColumns: ["id"];
-          },
-        ];
       };
       food_log_entries: {
         Row: {
@@ -1179,45 +1108,6 @@ export type Database = {
           product_id?: string;
           status?: string;
           store?: string;
-          updated_at?: string;
-          user_id?: string;
-        };
-        Relationships: [];
-      };
-      user_meal_slots: {
-        Row: {
-          created_at: string;
-          id: string;
-          is_active: boolean;
-          kcal_share: number | null;
-          label: string | null;
-          position: number;
-          slot: Database["public"]["Enums"]["meal_slot_t"];
-          target_time: string | null;
-          updated_at: string;
-          user_id: string;
-        };
-        Insert: {
-          created_at?: string;
-          id?: string;
-          is_active?: boolean;
-          kcal_share?: number | null;
-          label?: string | null;
-          position?: number;
-          slot: Database["public"]["Enums"]["meal_slot_t"];
-          target_time?: string | null;
-          updated_at?: string;
-          user_id: string;
-        };
-        Update: {
-          created_at?: string;
-          id?: string;
-          is_active?: boolean;
-          kcal_share?: number | null;
-          label?: string | null;
-          position?: number;
-          slot?: Database["public"]["Enums"]["meal_slot_t"];
-          target_time?: string | null;
           updated_at?: string;
           user_id?: string;
         };
