@@ -1,4 +1,4 @@
-> **Nota histórica.** Este documento foi escrito quando o Forja era um
+> **Nota histórica.** Este documento foi escrito quando o Habitual Fit era um
 > monorepo só. A estrutura de diretórios que ele descreve não existe mais —
 > o projeto virou `forja-backend` + `forja-frontend`. As **decisões** abaixo
 > (Expo, PowerSync, offline-first) continuam valendo e são o registro de por

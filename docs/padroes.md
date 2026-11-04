@@ -17,7 +17,7 @@ TanStack Router. Cada `.tsx` em `src/routes/` é uma rota. Regras (ver
 - `routeTree.gen.ts` é **auto-gerado** pelo plugin — nunca editar à mão.
 - Toda rota exporta `export const Route = createFileRoute("...")({ ... })`.
 - `head: () => ({ meta: [...] })` define `<title>`/SEO por rota. Títulos seguem o
-  padrão `"<Página> — Forja"`.
+  padrão `"<Página> — Habitual Fit"`.
 
 ## Arquivos auto-gerados (NÃO editar)
 

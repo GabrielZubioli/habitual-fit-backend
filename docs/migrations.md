@@ -19,7 +19,7 @@ Conferir o estado a qualquer momento com `npx supabase migration list`: cada
 migration deve ter `local` **e** `remote` preenchidos.
 
 `project_id` do Supabase em [supabase/config.toml](../../supabase/config.toml):
-`nursxzqagxmeiucsaqzm` (projeto **"Sofit"** no painel — o app se chama Forja;
+`nursxzqagxmeiucsaqzm` (projeto **"Sofit"** no painel — o app se chama Habitual Fit;
 os nomes divergem por razões históricas).
 
 ## Como criar/rodar (fluxo Supabase CLI)

@@ -2,13 +2,14 @@
   "name": "@forja/backend",
   "private": true,
   "type": "module",
-  "description": "Camada de dados e plataforma do Forja: schema Postgres, RLS, Edge Functions e o contrato @gabrielzubioli/db.",
+  "description": "Camada de dados e plataforma do Habitual Fit: schema Postgres, RLS, Edge Functions e o contrato @gabrielzubioli/db.",
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "db:types": "node scripts/gen-types.mjs",
-    "db:types:local": "node scripts/gen-types.mjs --local",
+    "db:types": "node scripts/gen-types.mjs && npm run db:schema",
+    "db:types:local": "node scripts/gen-types.mjs --local && npm run db:schema",
+    "db:schema": "node packages/db/scripts/build-powersync-schema.mjs",
     "db:types:check": "node scripts/check-types.mjs",
     "sync:validate": "node scripts/validate-streams.mjs",
     "db:lint": "supabase db lint --linked --schema public --fail-on warning",
@@ -24,14 +25,16 @@
     "typecheck": "npm run typecheck --workspace @gabrielzubioli/db",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "verify": "npm run typecheck && npm run db:build && npm run sync:validate && npm run format:check",
+    "verify": "npm run typecheck && node packages/db/scripts/build-powersync-schema.mjs --check && npm run db:build && npm run sync:validate && npm run format:check",
     "db:types:check:local": "node scripts/check-types.mjs --local"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^1.4.0",
     "prettier": "^3.7.3",
-    "yaml": "^2.7.0",
     "supabase": "^2.113.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "yaml": "^2.7.0",
+    "zod": "^4.6.7"
   },
   "engines": {
     "node": ">=22"

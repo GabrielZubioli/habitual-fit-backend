@@ -1,1 +1,6 @@
 project_id = "nursxzqagxmeiucsaqzm"
+
+# O RevenueCat não manda JWT do Supabase: a função autentica pelo header
+# `Authorization` configurado no painel do RevenueCat (REVENUECAT_WEBHOOK_AUTH).
+[functions.billing-webhook]
+verify_jwt = false

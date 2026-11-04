@@ -1,6 +1,6 @@
 # Criar um novo projeto Supabase (pós-Lovable)
 
-Guia para provisionar um projeto Supabase próprio e aplicar o schema do Forja.
+Guia para provisionar um projeto Supabase próprio e aplicar o schema do Habitual Fit.
 O schema completo (tabelas, RLS, triggers, seeds, bucket) está em
 `supabase/migrations/`.
 

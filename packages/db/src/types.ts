@@ -73,51 +73,6 @@ export type Database = {
           },
         ];
       };
-      ai_recommendations: {
-        Row: {
-          body: string;
-          created_at: string;
-          dedupe_key: string;
-          expires_at: string | null;
-          id: string;
-          kind: Database["public"]["Enums"]["ai_recommendation_kind_t"];
-          payload: Json | null;
-          resolved_at: string | null;
-          severity: number;
-          status: string;
-          title: string;
-          user_id: string;
-        };
-        Insert: {
-          body: string;
-          created_at?: string;
-          dedupe_key: string;
-          expires_at?: string | null;
-          id?: string;
-          kind: Database["public"]["Enums"]["ai_recommendation_kind_t"];
-          payload?: Json | null;
-          resolved_at?: string | null;
-          severity?: number;
-          status?: string;
-          title: string;
-          user_id: string;
-        };
-        Update: {
-          body?: string;
-          created_at?: string;
-          dedupe_key?: string;
-          expires_at?: string | null;
-          id?: string;
-          kind?: Database["public"]["Enums"]["ai_recommendation_kind_t"];
-          payload?: Json | null;
-          resolved_at?: string | null;
-          severity?: number;
-          status?: string;
-          title?: string;
-          user_id?: string;
-        };
-        Relationships: [];
-      };
       body_measurements: {
         Row: {
           abdomen_cm: number | null;
@@ -206,6 +161,7 @@ export type Database = {
         Row: {
           log_date: string;
           materialized_at: string;
+          meal_labels: Json;
           notes: string | null;
           plan_id: string | null;
           user_id: string;
@@ -213,6 +169,7 @@ export type Database = {
         Insert: {
           log_date: string;
           materialized_at?: string;
+          meal_labels?: Json;
           notes?: string | null;
           plan_id?: string | null;
           user_id: string;
@@ -220,6 +177,7 @@ export type Database = {
         Update: {
           log_date?: string;
           materialized_at?: string;
+          meal_labels?: Json;
           notes?: string | null;
           plan_id?: string | null;
           user_id?: string;
@@ -230,6 +188,32 @@ export type Database = {
             columns: ["plan_id"];
             isOneToOne: false;
             referencedRelation: "meal_plans";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      exercise_favorites: {
+        Row: {
+          created_at: string;
+          exercise_id: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          exercise_id: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          exercise_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "exercise_favorites_exercise_id_fkey";
+            columns: ["exercise_id"];
+            isOneToOne: false;
+            referencedRelation: "exercises";
             referencedColumns: ["id"];
           },
         ];
@@ -272,6 +256,7 @@ export type Database = {
           equipment: Database["public"]["Enums"]["equipment_t"];
           execution: string[] | null;
           execution_en: string[] | null;
+          execution_es: string[] | null;
           external_id: string | null;
           force_type: Database["public"]["Enums"]["force_type_t"] | null;
           id: string;
@@ -287,6 +272,7 @@ export type Database = {
           movement_pattern: Database["public"]["Enums"]["movement_pattern_t"] | null;
           name: string;
           name_en: string | null;
+          name_es: string | null;
           owner_id: string | null;
           popularity: number;
           primary_muscle: Database["public"]["Enums"]["muscle_t"];
@@ -305,6 +291,7 @@ export type Database = {
           equipment?: Database["public"]["Enums"]["equipment_t"];
           execution?: string[] | null;
           execution_en?: string[] | null;
+          execution_es?: string[] | null;
           external_id?: string | null;
           force_type?: Database["public"]["Enums"]["force_type_t"] | null;
           id?: string;
@@ -320,6 +307,7 @@ export type Database = {
           movement_pattern?: Database["public"]["Enums"]["movement_pattern_t"] | null;
           name: string;
           name_en?: string | null;
+          name_es?: string | null;
           owner_id?: string | null;
           popularity?: number;
           primary_muscle: Database["public"]["Enums"]["muscle_t"];
@@ -338,6 +326,7 @@ export type Database = {
           equipment?: Database["public"]["Enums"]["equipment_t"];
           execution?: string[] | null;
           execution_en?: string[] | null;
+          execution_es?: string[] | null;
           external_id?: string | null;
           force_type?: Database["public"]["Enums"]["force_type_t"] | null;
           id?: string;
@@ -353,6 +342,7 @@ export type Database = {
           movement_pattern?: Database["public"]["Enums"]["movement_pattern_t"] | null;
           name?: string;
           name_en?: string | null;
+          name_es?: string | null;
           owner_id?: string | null;
           popularity?: number;
           primary_muscle?: Database["public"]["Enums"]["muscle_t"];
@@ -361,32 +351,6 @@ export type Database = {
           video_url?: string | null;
         };
         Relationships: [];
-      };
-      food_favorites: {
-        Row: {
-          created_at: string;
-          food_id: string;
-          user_id: string;
-        };
-        Insert: {
-          created_at?: string;
-          food_id: string;
-          user_id: string;
-        };
-        Update: {
-          created_at?: string;
-          food_id?: string;
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "food_favorites_food_id_fkey";
-            columns: ["food_id"];
-            isOneToOne: false;
-            referencedRelation: "foods";
-            referencedColumns: ["id"];
-          },
-        ];
       };
       food_log_entries: {
         Row: {
@@ -508,6 +472,8 @@ export type Database = {
           fiber_g: number;
           household_grams: number | null;
           household_measure: string | null;
+          household_measure_en: string | null;
+          household_measure_es: string | null;
           id: string;
           image_url: string | null;
           iron_mg: number | null;
@@ -516,6 +482,8 @@ export type Database = {
           kcal: number;
           magnesium_mg: number | null;
           name: string;
+          name_en: string | null;
+          name_es: string | null;
           owner_id: string | null;
           phosphorus_mg: number | null;
           popularity: number;
@@ -549,6 +517,8 @@ export type Database = {
           fiber_g?: number;
           household_grams?: number | null;
           household_measure?: string | null;
+          household_measure_en?: string | null;
+          household_measure_es?: string | null;
           id?: string;
           image_url?: string | null;
           iron_mg?: number | null;
@@ -557,6 +527,8 @@ export type Database = {
           kcal?: number;
           magnesium_mg?: number | null;
           name: string;
+          name_en?: string | null;
+          name_es?: string | null;
           owner_id?: string | null;
           phosphorus_mg?: number | null;
           popularity?: number;
@@ -590,6 +562,8 @@ export type Database = {
           fiber_g?: number;
           household_grams?: number | null;
           household_measure?: string | null;
+          household_measure_en?: string | null;
+          household_measure_es?: string | null;
           id?: string;
           image_url?: string | null;
           iron_mg?: number | null;
@@ -598,6 +572,8 @@ export type Database = {
           kcal?: number;
           magnesium_mg?: number | null;
           name?: string;
+          name_en?: string | null;
+          name_es?: string | null;
           owner_id?: string | null;
           phosphorus_mg?: number | null;
           popularity?: number;
@@ -680,6 +656,7 @@ export type Database = {
           notes: string | null;
           position: number;
           prep_notes: string | null;
+          weekday: number | null;
           updated_at: string;
         };
         Insert: {
@@ -691,6 +668,7 @@ export type Database = {
           notes?: string | null;
           position?: number;
           prep_notes?: string | null;
+          weekday?: number | null;
           updated_at?: string;
         };
         Update: {
@@ -702,6 +680,7 @@ export type Database = {
           notes?: string | null;
           position?: number;
           prep_notes?: string | null;
+          weekday?: number | null;
           updated_at?: string;
         };
         Relationships: [
@@ -885,6 +864,7 @@ export type Database = {
           sex: Database["public"]["Enums"]["sex_t"] | null;
           sleep_time: string | null;
           training_place: string | null;
+          tutorial_completed_at: string | null;
           unit_system: Database["public"]["Enums"]["unit_system_t"];
           updated_at: string;
           wake_time: string | null;
@@ -923,6 +903,7 @@ export type Database = {
           sex?: Database["public"]["Enums"]["sex_t"] | null;
           sleep_time?: string | null;
           training_place?: string | null;
+          tutorial_completed_at?: string | null;
           unit_system?: Database["public"]["Enums"]["unit_system_t"];
           updated_at?: string;
           wake_time?: string | null;
@@ -961,6 +942,7 @@ export type Database = {
           sex?: Database["public"]["Enums"]["sex_t"] | null;
           sleep_time?: string | null;
           training_place?: string | null;
+          tutorial_completed_at?: string | null;
           unit_system?: Database["public"]["Enums"]["unit_system_t"];
           updated_at?: string;
           wake_time?: string | null;
@@ -1043,71 +1025,89 @@ export type Database = {
       };
       recipes: {
         Row: {
+          category: string | null;
           created_at: string;
           deleted_at: string | null;
           id: string;
+          image_url: string | null;
+          instructions: string | null;
+          instructions_en: string | null;
+          instructions_es: string | null;
           name: string;
+          name_en: string | null;
+          name_es: string | null;
           notes: string | null;
+          prep_minutes: number | null;
           servings: number;
           updated_at: string;
-          user_id: string;
+          user_id: string | null;
         };
         Insert: {
+          category?: string | null;
           created_at?: string;
           deleted_at?: string | null;
           id?: string;
+          image_url?: string | null;
+          instructions?: string | null;
+          instructions_en?: string | null;
+          instructions_es?: string | null;
           name: string;
+          name_en?: string | null;
+          name_es?: string | null;
           notes?: string | null;
+          prep_minutes?: number | null;
           servings?: number;
           updated_at?: string;
-          user_id: string;
+          user_id?: string | null;
         };
         Update: {
+          category?: string | null;
           created_at?: string;
           deleted_at?: string | null;
           id?: string;
+          image_url?: string | null;
+          instructions?: string | null;
+          instructions_en?: string | null;
+          instructions_es?: string | null;
           name?: string;
+          name_en?: string | null;
+          name_es?: string | null;
           notes?: string | null;
+          prep_minutes?: number | null;
           servings?: number;
           updated_at?: string;
-          user_id?: string;
+          user_id?: string | null;
         };
         Relationships: [];
       };
-      user_meal_slots: {
+      subscriptions: {
         Row: {
           created_at: string;
-          id: string;
-          is_active: boolean;
-          kcal_share: number | null;
-          label: string | null;
-          position: number;
-          slot: Database["public"]["Enums"]["meal_slot_t"];
-          target_time: string | null;
+          current_period_end: string | null;
+          last_event_at: string;
+          product_id: string;
+          status: string;
+          store: string;
           updated_at: string;
           user_id: string;
         };
         Insert: {
           created_at?: string;
-          id?: string;
-          is_active?: boolean;
-          kcal_share?: number | null;
-          label?: string | null;
-          position?: number;
-          slot: Database["public"]["Enums"]["meal_slot_t"];
-          target_time?: string | null;
+          current_period_end?: string | null;
+          last_event_at: string;
+          product_id: string;
+          status: string;
+          store: string;
           updated_at?: string;
           user_id: string;
         };
         Update: {
           created_at?: string;
-          id?: string;
-          is_active?: boolean;
-          kcal_share?: number | null;
-          label?: string | null;
-          position?: number;
-          slot?: Database["public"]["Enums"]["meal_slot_t"];
-          target_time?: string | null;
+          current_period_end?: string | null;
+          last_event_at?: string;
+          product_id?: string;
+          status?: string;
+          store?: string;
           updated_at?: string;
           user_id?: string;
         };
@@ -1170,6 +1170,7 @@ export type Database = {
           is_active: boolean;
           level: string;
           name: string;
+          schedule_mode: string;
           training_weekdays: number[];
           updated_at: string;
           user_id: string;
@@ -1185,6 +1186,7 @@ export type Database = {
           is_active?: boolean;
           level: string;
           name: string;
+          schedule_mode?: string;
           training_weekdays?: number[];
           updated_at?: string;
           user_id: string;
@@ -1200,6 +1202,7 @@ export type Database = {
           is_active?: boolean;
           level?: string;
           name?: string;
+          schedule_mode?: string;
           training_weekdays?: number[];
           updated_at?: string;
           user_id?: string;
@@ -1413,6 +1416,7 @@ export type Database = {
         Row: {
           created_at: string;
           deleted_at: string | null;
+          icon: string | null;
           id: string;
           name: string;
           notes: string | null;
@@ -1421,10 +1425,12 @@ export type Database = {
           routine_order: number | null;
           updated_at: string;
           user_id: string;
+          weekdays: number[];
         };
         Insert: {
           created_at?: string;
           deleted_at?: string | null;
+          icon?: string | null;
           id?: string;
           name: string;
           notes?: string | null;
@@ -1433,10 +1439,12 @@ export type Database = {
           routine_order?: number | null;
           updated_at?: string;
           user_id: string;
+          weekdays?: number[];
         };
         Update: {
           created_at?: string;
           deleted_at?: string | null;
+          icon?: string | null;
           id?: string;
           name?: string;
           notes?: string | null;
@@ -1445,6 +1453,7 @@ export type Database = {
           routine_order?: number | null;
           updated_at?: string;
           user_id?: string;
+          weekdays?: number[];
         };
         Relationships: [
           {
@@ -1462,6 +1471,17 @@ export type Database = {
     };
     Functions: {
       all_http_urls: { Args: { urls: string[] }; Returns: boolean };
+      apply_subscription_event: {
+        Args: {
+          _current_period_end: string;
+          _event_at: string;
+          _product_id: string;
+          _status: string;
+          _store: string;
+          _user_id: string;
+        };
+        Returns: undefined;
+      };
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"];
@@ -1469,6 +1489,7 @@ export type Database = {
         };
         Returns: boolean;
       };
+      is_premium: { Args: never; Returns: boolean };
       show_limit: { Args: never; Returns: number };
       show_trgm: { Args: { "": string }; Returns: string[] };
     };

@@ -1,6 +1,6 @@
-# forja-backend
+# habitual-fit-backend
 
-Camada de dados e plataforma do Forja: schema do Postgres, RLS, Edge Functions,
+Camada de dados e plataforma do Habitual Fit: schema do Postgres, RLS, Edge Functions,
 geradores de catálogo e o contrato `@gabrielzubioli/db`.
 
 Este repositório **não tem servidor de aplicação**, e isso é uma decisão, não uma

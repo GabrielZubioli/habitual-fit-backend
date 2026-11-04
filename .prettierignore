@@ -6,3 +6,6 @@ package-lock.json
 # cada regeneração; formatá-las só produziria diff de ruído.
 supabase/migrations/*_seed_*.sql
 supabase/migrations/*_link_curated_media.sql
+
+# Gerado por packages/db/scripts/build-powersync-schema.mjs
+packages/db/src/schema.ts

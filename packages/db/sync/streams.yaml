@@ -1,14 +1,24 @@
-# PowerSync Sync Streams (edition 3) — Forja
+# PowerSync Sync Streams (edition 3) — Habitual Fit
 #
 # Cole/publique este arquivo no dashboard da instância PowerSync conectada ao
 # Postgres do Supabase. `auth.user_id()` resolve o `sub` do JWT do Supabase.
 #
 # Estratégia de particionamento:
 #  - stream "user_owned": tudo que pertence ao usuário. Tabelas-filhas sem
-#    coluna user_id (workout_sets, workout_template_exercises, recipe_items)
-#    são filtradas por JOIN com a tabela-pai — não é preciso denormalizar.
-#  - stream "catalog": dados públicos de referência (exercícios/alimentos
-#    oficiais e contribuições musculares), sincronizados para todos.
+#    coluna user_id (workout_sets, workout_template_exercises, recipe_items,
+#    meal_plan_meals, meal_plan_items) são filtradas por JOIN com a tabela-pai.
+#  - stream "catalog": dados públicos de referência (exercícios e alimentos
+#    oficiais, contribuições musculares e as receitas prontas), para todos.
+#
+# O PowerSync exige uma coluna `id` em toda linha. As tabelas de chave
+# composta (diet_days, exercise_favorites, exercise_muscles,
+# food_substitution_prefs, onboarding_answers) ganham um `id` derivado da chave
+# natural — e as escritas delas, no app, são upserts por essa chave, não por
+# `id`. O `npm run sync:validate` falha se alguma esquecer o `AS id`.
+#
+# A tabela sincronizada nunca leva apelido no FROM: o PowerSync grava a linha
+# com o nome do apelido (`FROM recipe_items ri` viraria a tabela "ri" no
+# aparelho, e `recipe_items` ficaria vazia). Só as tabelas do JOIN levam.
 
 config:
   edition: 3
@@ -19,50 +29,62 @@ streams:
     queries:
       - SELECT * FROM profiles WHERE id = auth.user_id()
       - SELECT * FROM user_roles WHERE user_id = auth.user_id()
+      - SELECT *, user_id AS id FROM onboarding_answers WHERE user_id = auth.user_id()
+      - SELECT * FROM goals WHERE user_id = auth.user_id()
 
+      - SELECT * FROM workout_routines WHERE user_id = auth.user_id()
       - SELECT * FROM workout_templates WHERE user_id = auth.user_id()
-      - SELECT wte.* FROM workout_template_exercises wte
-        JOIN workout_templates t ON t.id = wte.template_id
+      - SELECT workout_template_exercises.* FROM workout_template_exercises
+        JOIN workout_templates t ON t.id = workout_template_exercises.template_id
         WHERE t.user_id = auth.user_id()
-      - SELECT * FROM progression_settings WHERE user_id = auth.user_id()
       - SELECT * FROM workout_sessions WHERE user_id = auth.user_id()
-      - SELECT ws.* FROM workout_sets ws
-        JOIN workout_sessions s ON s.id = ws.session_id
+      - SELECT workout_sets.* FROM workout_sets
+        JOIN workout_sessions s ON s.id = workout_sets.session_id
         WHERE s.user_id = auth.user_id()
+      - SELECT *, user_id || ':' || exercise_id AS id FROM exercise_favorites WHERE user_id = auth.user_id()
 
+      - SELECT * FROM meal_plans WHERE user_id = auth.user_id()
+      - SELECT meal_plan_meals.* FROM meal_plan_meals
+        JOIN meal_plans p ON p.id = meal_plan_meals.plan_id
+        WHERE p.user_id = auth.user_id()
+      - SELECT meal_plan_items.* FROM meal_plan_items
+        JOIN meal_plan_meals m ON m.id = meal_plan_items.meal_id
+        JOIN meal_plans p ON p.id = m.plan_id
+        WHERE p.user_id = auth.user_id()
+      - SELECT *, user_id || ':' || log_date AS id FROM diet_days WHERE user_id = auth.user_id()
       - SELECT * FROM food_log_entries WHERE user_id = auth.user_id()
+      - SELECT *, user_id || ':' || food_id || ':' || substitute_id AS id FROM food_substitution_prefs WHERE user_id = auth.user_id()
+      - SELECT * FROM water_intake WHERE user_id = auth.user_id()
       - SELECT * FROM recipes WHERE user_id = auth.user_id()
-      - SELECT ri.* FROM recipe_items ri
-        JOIN recipes r ON r.id = ri.recipe_id
+      - SELECT recipe_items.* FROM recipe_items
+        JOIN recipes r ON r.id = recipe_items.recipe_id
         WHERE r.user_id = auth.user_id()
 
       - SELECT * FROM body_weights WHERE user_id = auth.user_id()
       - SELECT * FROM body_measurements WHERE user_id = auth.user_id()
       - SELECT * FROM progress_photos WHERE user_id = auth.user_id()
-      - SELECT * FROM tdee_estimates WHERE user_id = auth.user_id()
 
       # Itens personalizados do próprio usuário (catálogo privado)
       - SELECT * FROM exercises WHERE owner_id = auth.user_id()
       - SELECT * FROM foods WHERE owner_id = auth.user_id()
+      # As contribuições dos exercícios do próprio usuário — a query acima
+      # traz o exercício; as linhas de `exercise_muscles` precisam da sua.
+      - SELECT exercise_muscles.*, exercise_muscles.exercise_id || ':' || exercise_muscles.muscle AS id FROM exercise_muscles
+        JOIN exercises e ON e.id = exercise_muscles.exercise_id
+        WHERE e.owner_id = auth.user_id()
 
   catalog:
     auto_subscribe: true
     queries:
       - SELECT * FROM exercises WHERE is_public = true AND deleted_at IS NULL
-      # Filtrado pelo mesmo critério de `exercises`. Sem o JOIN, a query era um
-      # `SELECT *` cru: o device baixava as contribuições musculares de
-      # exercícios privados de outros usuários — linhas que ele nunca consegue
-      # exibir (o exercício correspondente não desce) e que revelam a
-      # composição de um item que não é dele.
-      - SELECT em.* FROM exercise_muscles em
-        JOIN exercises e ON e.id = em.exercise_id
+      # Filtrado pelo mesmo critério de `exercises`: sem o JOIN, o aparelho
+      # baixaria as contribuições de exercícios privados de outras pessoas.
+      - SELECT exercise_muscles.*, exercise_muscles.exercise_id || ':' || exercise_muscles.muscle AS id FROM exercise_muscles
+        JOIN exercises e ON e.id = exercise_muscles.exercise_id
         WHERE e.is_public = true AND e.deleted_at IS NULL
       - SELECT * FROM foods WHERE is_public = true AND deleted_at IS NULL
-
-      # As contribuições dos exercícios do próprio usuário vêm por aqui — a
-      # stream `user_owned` sincroniza `exercises WHERE owner_id = ...`, mas as
-      # linhas de `exercise_muscles` correspondentes precisam de sua própria
-      # query.
-      - SELECT em.* FROM exercise_muscles em
-        JOIN exercises e ON e.id = em.exercise_id
-        WHERE e.owner_id = auth.user_id()
+      # As receitas prontas (sem dono) e os ingredientes delas.
+      - SELECT * FROM recipes WHERE user_id IS NULL AND deleted_at IS NULL
+      - SELECT recipe_items.* FROM recipe_items
+        JOIN recipes r ON r.id = recipe_items.recipe_id
+        WHERE r.user_id IS NULL AND r.deleted_at IS NULL

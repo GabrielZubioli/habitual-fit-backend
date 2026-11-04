@@ -22,3 +22,8 @@ scripts/catalog/.match-report.txt
 !.vscode/extensions.json
 .idea
 .DS_Store
+powersync/
+
+# Tradução em lote (scripts/catalog/translate-es.mjs)
+scripts/catalog/.cache-es.json
+scripts/catalog/.amostra-es.sql

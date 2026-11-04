@@ -1,5 +1,5 @@
 /**
- * @gabrielzubioli/db — o contrato de dados do Forja.
+ * @gabrielzubioli/db — o contrato de dados do Habitual Fit.
  *
  * Este pacote é a **fonte única de verdade** sobre a forma dos dados. Ele é
  * gerado a partir do Postgres (`npm run db:types`) e publicado versionado; web e

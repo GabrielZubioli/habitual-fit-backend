@@ -97,7 +97,7 @@ Deno.serve(async (req: Request) => {
   if (userError || !userData.user) return json({ error: "Sessão inválida." }, 401);
 
   // --- Entrada ------------------------------------------------------------
-  let body: { messages?: { role: string; content: string }[] };
+  let body: { messages?: { role: string; content: string }[]; locale?: string };
   try {
     body = await req.json();
   } catch {
@@ -116,6 +116,12 @@ Deno.serve(async (req: Request) => {
 
   // --- Contexto -----------------------------------------------------------
   const context = await buildContext(supabase);
+  const idioma =
+    IDIOMAS[
+      String(body.locale ?? "")
+        .slice(0, 2)
+        .toLowerCase()
+    ] ?? IDIOMAS.pt;
 
   // --- Chamada ao modelo --------------------------------------------------
   let response: Response;
@@ -131,7 +137,7 @@ Deno.serve(async (req: Request) => {
         model: MODEL,
         max_tokens: MAX_TOKENS,
         output_config: { effort: EFFORT },
-        system: systemPrompt(context),
+        system: systemPrompt(context, idioma),
         messages,
         stream: true,
       }),
@@ -277,10 +283,20 @@ async function buildContext(supabase: ReturnType<typeof createClient>): Promise<
   };
 }
 
-function systemPrompt(ctx: CoachContext): string {
+/**
+ * Em que idioma o treinador responde — o do app de quem pergunta. Os dados do
+ * contexto (nomes de exercício, rótulos) continuam como estão no banco.
+ */
+const IDIOMAS: Record<string, string> = {
+  pt: "Fale em português do Brasil",
+  en: "Responda em inglês (inglês americano), mesmo que os dados abaixo estejam em português",
+  es: 'Responda em espanhol neutro (latino-americano, tratando por "tú"), mesmo que os dados abaixo estejam em português',
+};
+
+function systemPrompt(ctx: CoachContext, idioma: string): string {
   const lista = (arr: string[]) => (arr.length ? arr.join(", ") : "nenhuma");
 
-  return `Você é o treinador do Forja, um app brasileiro de musculação e nutrição. Fale em português do Brasil, na segunda pessoa ("você"), com tom direto e prático — como um bom personal trainer, não como um manual.
+  return `Você é o treinador do Habitual Fit, um app brasileiro de musculação e nutrição. ${idioma}, na segunda pessoa, com tom direto e prático — como um bom personal trainer, não como um manual.
 
 ## Quem está falando com você
 

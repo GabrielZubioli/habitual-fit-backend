@@ -1,6 +1,6 @@
 # Banco de dados — Row Level Security (RLS)
 
-RLS é o **mecanismo de segurança central** do Forja. Como a área logada fala direto
+RLS é o **mecanismo de segurança central** do Habitual Fit. Como a área logada fala direto
 com o Supabase pelo client anon/publishable, é o banco (não a aplicação) que garante
 que cada usuário só acesse os próprios dados. Todas as tabelas têm
 `ENABLE ROW LEVEL SECURITY`.
