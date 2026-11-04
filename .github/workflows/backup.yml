@@ -1,0 +1,73 @@
+name: Backup do banco
+
+# Dump diário do Postgres de produção, criptografado para o certificado em
+# .github/backup/certificado.pem. A chave privada não fica no GitHub: o repo é
+# público e qualquer conta logada consegue baixar os artifacts. Pelo mesmo
+# motivo, nenhum passo imprime dados — só tamanhos. Restauração: docs/backup.md.
+
+on:
+  schedule:
+    - cron: "0 6 * * *" # 03:00 de Brasília
+  workflow_dispatch:
+
+concurrency:
+  group: backup
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.113.0 # a versão testada na restauração
+
+      # Os três arquivos do guia oficial de backup/restore do Supabase.
+      # data.sql inclui auth.users, então as contas voltam junto.
+      # Fica de fora o que o usuário postgres não consegue reaplicar num projeto
+      # novo (testado restaurando num Supabase local): o GRANT ON PARAMETER do
+      # Realtime e as tabelas internas de vetores do Storage — o Supabase cria
+      # e gerencia os dois sozinho.
+      - name: Dump
+        env:
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          mkdir dump
+          supabase db dump --db-url "$DB_URL" -f dump/roles.sql --role-only
+          sed -i '/ON PARAMETER/d' dump/roles.sql
+          supabase db dump --db-url "$DB_URL" -f dump/schema.sql
+          supabase db dump --db-url "$DB_URL" -f dump/data.sql --data-only --use-copy \
+            -x storage.buckets_vectors -x storage.vector_indexes
+          wc -c dump/*.sql
+
+      # Dump vazio ou truncado tem que falhar o job (o GitHub manda e-mail).
+      - name: Confere o dump
+        run: |
+          min() { [ "$(stat -c %s "dump/$1")" -ge "$2" ] || { echo "::error::$1 menor que $2 bytes"; exit 1; }; }
+          min roles.sql 100
+          min schema.sql 50000
+          min data.sql 1000000
+          grep -q '^COPY "auth"."users"' dump/data.sql || { echo "::error::data.sql sem auth.users"; exit 1; }
+          grep -c '^COPY ' dump/data.sql | xargs echo "tabelas com dados:"
+
+      - name: Criptografa
+        run: |
+          tar czf - -C dump . \
+            | openssl cms -encrypt -binary -aes256 -stream -outform DER \
+                -out backup.tar.gz.cms .github/backup/certificado.pem
+          rm -rf dump
+          wc -c backup.tar.gz.cms
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backup-${{ github.run_number }}
+          path: backup.tar.gz.cms
+          retention-days: 30
+          compression-level: 0
+          if-no-files-found: error

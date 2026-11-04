@@ -1,0 +1,56 @@
+name: Saúde do banco
+
+# Em 3/11 o slot do PowerSync parou de ser lido e o WAL retido lotou o disco.
+# Com archive_timeout de 120 s o WAL cresce ~480 MB/h, e max_slot_wal_keep_size
+# é 1 GB: o alerta precisa ser horário. Se algo passar do limite o job falha e
+# o GitHub manda e-mail. O log é público: só números, nunca dados.
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+    inputs:
+      testar_alerta:
+        description: Zera os limites para ver o alerta disparar
+        type: boolean
+        default: false
+
+concurrency:
+  group: saude-do-banco
+
+permissions: {}
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Verifica slot do PowerSync e tamanho do banco
+        env:
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          PGCONNECT_TIMEOUT: 20
+          LIMITE_WAL_MB: ${{ inputs.testar_alerta && '0' || '300' }}
+          LIMITE_BANCO_MB: ${{ inputs.testar_alerta && '0' || '400' }}
+        run: |
+          read -r slots inativos perdidos wal_mb banco_mb < <(
+            timeout 30 psql "$DB_URL" -v ON_ERROR_STOP=1 -tA -F ' ' -c "
+              select count(*),
+                     count(*) filter (where not active),
+                     count(*) filter (where wal_status in ('lost', 'unreachable')),
+                     coalesce(max(pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn)), 0)::bigint / 1048576,
+                     pg_database_size(current_database()) / 1048576
+              from pg_replication_slots
+              where slot_name like 'powersync%'"
+          ) || { echo "::error::Banco não respondeu"; exit 1; }
+
+          echo "slots=$slots inativos=$inativos perdidos=$perdidos wal_retido=${wal_mb}MB banco=${banco_mb}MB"
+
+          falhou=0
+          alerta() { echo "::error::$1"; falhou=1; }
+          [ "$slots" -ge 1 ] || alerta "Nenhum slot do PowerSync"
+          [ "$inativos" -eq 0 ] || alerta "Slot do PowerSync inativo"
+          [ "$perdidos" -eq 0 ] || alerta "Slot do PowerSync perdido (wal_status lost/unreachable): vai ressincronizar"
+          [ "$wal_mb" -le "$LIMITE_WAL_MB" ] || alerta "WAL retido ${wal_mb}MB > ${LIMITE_WAL_MB}MB (limite do slot é 1 GB)"
+          [ "$banco_mb" -le "$LIMITE_BANCO_MB" ] || alerta "Banco com ${banco_mb}MB > ${LIMITE_BANCO_MB}MB (free fica só-leitura em 500 MB)"
+          exit $falhou
